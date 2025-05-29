@@ -98,7 +98,7 @@ st.dataframe(resumen.style.format({"Duración_Total_Min": "{:.1f}", "Duración_P
 # Módulo 2: distribución por día de la semana
 st.subheader("📅 Distribución de llamadas por día de la semana")
 fig1, ax1 = plt.subplots()
-sns.countplot(data=df_expandido_filtrado, x="DíaSemana", order=["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"], ax=ax1)
+sns.countplot(data=df_expandido_filtrado, x="DíaSemana", order=["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"], ax=ax1)
 plt.xticks(rotation=45)
 plt.title("Cantidad de llamadas por día")
 st.pyplot(fig1)
@@ -106,7 +106,7 @@ st.pyplot(fig1)
 # Módulo 3: heatmap por hora y día
 st.subheader("🕒 Llamadas por hora y día (Heatmap)")
 pivot = df_expandido_filtrado.pivot_table(index="Hora", columns="DíaSemana", values="Duración (min)", aggfunc="count", fill_value=0)
-pivot = pivot[["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]]
+pivot = pivot[["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]]
 fig2, ax2 = plt.subplots(figsize=(10, 6))
 sns.heatmap(pivot, annot=True, fmt=".0f", cmap="YlGnBu", ax=ax2)
 plt.title("Distribución de llamadas por hora y día")
