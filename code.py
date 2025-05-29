@@ -103,14 +103,30 @@ plt.xticks(rotation=45)
 plt.title("Cantidad de llamadas por día")
 st.pyplot(fig1)
 
-# Módulo 3: heatmap por hora y día
-st.subheader("🕒 Llamadas por hora y día (Heatmap)")
-pivot = df_expandido_filtrado.pivot_table(index="Hora", columns="DíaSemana", values="Duración (min)", aggfunc="count", fill_value=0)
-pivot = pivot[["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]]
-fig2, ax2 = plt.subplots(figsize=(10, 6))
-sns.heatmap(pivot, annot=True, fmt=".0f", cmap="YlGnBu", ax=ax2)
-plt.title("Distribución de llamadas por hora y día")
-st.pyplot(fig2)
+# Preparación del pivot table para heatmap llamadas perdidas (reordenado y con índice legible)
+dias_validos = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+dias_traducidos = {
+    "Monday": "Lunes", "Tuesday": "Martes", "Wednesday": "Miércoles",
+    "Thursday": "Jueves", "Friday": "Viernes", "Saturday": "Sábado", "Sunday": "Domingo"
+}
+horas_ordenadas = list(range(8, 21))  # Desde 8am hasta 20pm
+
+pivot_perdidas = df_expandido_filtrado[
+    (df_expandido_filtrado["DíaSemana_En"].isin(dias_validos)) & (df_expandido_filtrado["LlamadaPerdida"])
+]
+
+pivot_table_perdidas = pivot_perdidas.pivot_table(
+    index="Hora",
+    columns="DíaSemana_En",
+    aggfunc="size",
+    fill_value=0
+)
+
+# Reordenar columnas y filas
+pivot_table_perdidas = pivot_table_perdidas.reindex(columns=dias_validos, fill_value=0)
+pivot_table_perdidas.columns = [dias_traducidos[d] for d in pivot_table_perdidas.columns]
+pivot_table_perdidas = pivot_table_perdidas.reindex(horas_ordenadas[::-1], fill_value=0)  # invertir orden para mostrar de 8am hacia abajo
+pivot_table_perdidas.index = [f"{h}:00" for h in pivot_table_perdidas.index]
 
 # Módulo 4: alertas de llamadas perdidas
 st.subheader("🚨 Alertas de días con muchas llamadas perdidas")
